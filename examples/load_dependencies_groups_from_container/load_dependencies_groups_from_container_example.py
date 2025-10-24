@@ -64,6 +64,11 @@ class OldProcessor(Processor):
         print("OldProcessor processing")
         return value - 1
 
+@injectable
+class UnrelatedClass:
+    def run(self):
+        print("UnrelatedClass running")
+
 
 class SelectingDependencies(Example):
     @autowired
@@ -75,10 +80,13 @@ class SelectingDependencies(Example):
         all_allowed: Annotated[List[Processor], Autowired],
         # Per-injection filtering using exclude_groups
         all_but_old: Annotated[List[Processor], Autowired(exclude_groups=["old"])],
+        # Unrelated injectable, not affected by the selection
+        unrelated: Annotated[UnrelatedClass, Autowired],
     ):
         self.preferred = preferred
         self.all_allowed = all_allowed
         self.all_but_old = all_but_old
+        self.unrelated = unrelated
 
     def run(self):
         print(self.preferred.process(3))
@@ -90,6 +98,9 @@ class SelectingDependencies(Example):
 
         print([type(p).__name__ for p in self.all_but_old])
         # ['DefaultProcessor', 'NewProcessor']
+
+        self.unrelated.run()
+        # UnrelatedClass running
 
 
 def run_example():

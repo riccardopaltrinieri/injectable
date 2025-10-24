@@ -51,7 +51,9 @@ def filter_by_group(
 
 def _filter_by_container_groups(matches: Set[Injectable]) -> Set[Injectable]:
     container_groups = InjectionContainer.GROUPS or []
-    if not container_groups:
+    if not container_groups or not any(
+        [i for i in matches if i.group in container_groups]
+    ):
         return matches
 
     container_matches = {
